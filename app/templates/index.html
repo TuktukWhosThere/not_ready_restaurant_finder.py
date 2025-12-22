@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Suggestion</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        label { display: block; margin-top: 10px; }
+        button { margin-top: 10px; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Restaurant Suggestion</h1>
+
+    <label>Latitude:
+        <input type="text" id="lat" value="50.0731173">
+    </label>
+
+    <label>Longitude:
+        <input type="text" id="lon" value="14.4385034">
+    </label>
+
+    <label>Radius (meters):
+        <input type="number" id="radius" value="1000">
+    </label>
+
+    <label>Strategy:
+        <select id="strategy">
+            <option value="random">Random</option>
+            <option value="best_rated">Best Rated</option>
+            <option value="closest">Closest</option>
+        </select>
+    </label>
+
+    <button onclick="suggest()">Suggest Restaurant</button>
+
+    <h2>Suggested Restaurant:</h2>
+    <pre id="restaurant_output"></pre>
+
+    <button onclick="confirmVisit()">Confirm Visit</button>
+    <button onclick="denyVisit()">Deny / Forbid</button>
+
+    <h2>Update Visit:</h2>
+    <label>Visited:
+        <input type="checkbox" id="visited">
+    </label>
+
+    <label>Forbidden:
+        <input type="checkbox" id="forbidden">
+    </label>
+
+    <label>Rating:
+        <input type="number" id="rating" step="0.1" min="0" max="5">
+    </label>
+
+    <button onclick="updateVisit()">Update</button>
+
+    <pre id="update_output"></pre>
+
+    <script>
+        let currentRestaurantId = null;
+
+        async function suggest() {
+            const user_id = document.getElementById('user_id').value;
+            const lat = document.getElementById('lat').value;
+            const lon = document.getElementById('lon').value;
+            const radius = document.getElementById('radius').value;
+            const strategy = document.getElementById('strategy').value;
+
+            const response = await fetch(`/user_choices/suggest?latitude=${lat}&longitude=${lon}&radius=${radius}&strategy=${strategy}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('restaurant_output').innerText = JSON.stringify(data, null, 2);
+                currentRestaurantId = data.id;
+            } else {
+                document.getElementById('restaurant_output').innerText = data.detail;
+                currentRestaurantId = null;
+            }
+        }
+
+
+        async function confirmVisit() {
+            if (!currentRestaurantId) {
+                alert("No restaurant selected!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("latitude", document.getElementById('lat').value);
+            formData.append("longitude", document.getElementById('lon').value);
+            formData.append("radius", document.getElementById('radius').value);
+            formData.append("strategy", document.getElementById('strategy').value);
+
+            const response = await fetch(
+                `/user_choices/confirm/${currentRestaurantId}`,
+                { method: "POST", body: formData }
+            );
+
+            if (response.ok) {
+                alert("✅ Visit confirmed!");
+                suggest();
+            } else {
+                alert("Error confirming visit");
+            }
+        }
+
+        async function denyVisit() {
+            if (!currentRestaurantId) {
+                alert("No restaurant selected!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("latitude", document.getElementById('lat').value);
+            formData.append("longitude", document.getElementById('lon').value);
+            formData.append("radius", document.getElementById('radius').value);
+            formData.append("strategy", document.getElementById('strategy').value);
+
+            const response = await fetch(
+                `/user_choices/deny/${currentRestaurantId}`,
+                { method: "POST", body: formData }
+            );
+
+            if (response.ok) {
+                alert("❌ Visit denied!");
+                suggest();
+            } else {
+                alert("Error denying visit");
+            }
+        }
+
+        async function updateVisit() {
+            if (!currentRestaurantId) {
+                alert("No restaurant selected!");
+                return;
+            }
+
+            const payload = {
+                visited: document.getElementById('visited').checked,
+                forbidden: document.getElementById('forbidden').checked,
+                rating_given: document.getElementById('rating').value
+                    ? parseFloat(document.getElementById('rating').value)
+                    : null
+            };
+
+            const response = await fetch(
+                `/user_choices/update/${currentRestaurantId}`,
+                {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const data = await response.json();
+            document.getElementById('update_output').innerText =
+                JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

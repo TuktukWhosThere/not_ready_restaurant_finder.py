@@ -1,0 +1,55 @@
+<!-- app/templates/suggestion.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Suggestion</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<h1>🍽 Restaurant Suggestion</h1>
+
+{% if restaurant %}
+    <div class="restaurant-card">
+        <h2>{{ restaurant.name }}</h2>
+
+        <p><strong>Address:</strong> {{ restaurant.vicinity or "N/A" }}</p>
+
+        <p><strong>Rating:</strong>
+            {{ restaurant.rating or "No rating" }}
+            ⭐ ({{ restaurant.user_ratings or 0 }} reviews)
+        </p>
+
+        <!-- CONFIRM VISIT -->
+        <form method="post" action="/user_choices/confirm/{{ restaurant.id }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="latitude" value="{{ latitude }}">
+            <input type="hidden" name="longitude" value="{{ longitude }}">
+            <input type="hidden" name="radius" value="{{ radius }}">
+            <input type="hidden" name="strategy" value="{{ strategy }}">
+            <button type="submit">✅ Confirm Visit</button>
+        </form>
+
+        <br>
+
+        <!-- DENY / FORBID -->
+        <form method="post" action="/user_choices/deny/{{ restaurant.id }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="latitude" value="{{ latitude }}">
+            <input type="hidden" name="longitude" value="{{ longitude }}">
+            <input type="hidden" name="radius" value="{{ radius }}">
+            <input type="hidden" name="strategy" value="{{ strategy }}">
+            <button type="submit">❌ Deny / Forbid</button>
+        </form>
+    </div>
+
+{% else %}
+    <p>No restaurant available.</p>
+{% endif %}
+
+<br>
+<a href="/">⬅ Back to Home</a>
+
+</body>
+</html>
