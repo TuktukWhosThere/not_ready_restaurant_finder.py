@@ -1,3 +1,4 @@
+<!-- app/templates/index.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,6 +32,7 @@
             <option value="closest">Closest</option>
         </select>
     </label>
+    <input type="hidden" id="user_id" value="{{ request.session.get('user_id', '') }}">
 
     <button onclick="suggest()">Suggest Restaurant</button>
 

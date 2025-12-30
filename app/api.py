@@ -11,6 +11,7 @@ from sqlalchemy import or_
 from app.models import UserVisit
 
 
+
 API_KEY = os.getenv("API_KEY")
 
 # ------------------- Restaurant Business Logic -------------------

@@ -10,4 +10,10 @@ router = APIRouter()
 
 @router.get("/", response_model=list[RestaurantRead])
 def fetch_restaurants_endpoint(latitude: float, longitude: float, radius: int, user_id: int = None, db: Session = Depends(get_db)):
-    return fetch_restaurants(latitude=latitude, longitude=longitude, radius=radius, user_id=user_id, db=db)
+    return fetch_restaurants(
+        latitude=latitude,
+        longitude=longitude,
+        radius=radius,
+        db=db,
+        user_id=user_id
+    )

@@ -1,1 +1,1 @@
-# Package init
+# app/_init_.py

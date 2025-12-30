@@ -3,7 +3,6 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
-
 from app.database import get_db
 from app.auth import create_user, get_user_by_email, verify_user_password
 

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..schemas.user import UserCreate, UserRead
 from ..models import User
-from ..database import get_db
+from app.database import get_db
 from ..security import hash_password
 
 router = APIRouter()

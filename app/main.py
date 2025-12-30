@@ -4,12 +4,18 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
-
 from app.database import create_tables, get_db
 from app.routes.user_routes import router as user_router
 from app.routes.restaurant_routes import router as restaurant_router
 from app.routes.user_choices import router as user_choices_router
 from app.routes.auth_routes import router as auth_router
+import os
+from dotenv import load_dotenv
+from starlette.middleware.sessions import SessionMiddleware
+
+
+load_dotenv()  # load env vars from .env
+SESSION_SECRET = os.getenv("SESSION_SECRET")
 
 # 1️⃣ Create the FastAPI app first
 app = FastAPI(
@@ -19,7 +25,7 @@ app = FastAPI(
 )
 
 # 2️⃣ Add session middleware AFTER app is created
-app.add_middleware(SessionMiddleware, secret_key="YOUR_SECRET_KEY")
+app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
 
 # 3️⃣ Set up templates directory
 templates = Jinja2Templates(directory="app/templates")
